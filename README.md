@@ -16,3 +16,5 @@ $ make -j48
 $ make -j48 install
 $ export PATH=$(pwd)/../install/bin:$PATH
 ```
+
+Note the line `$ sudo ln -s /opt/mpss/3.4.2/sysroots/k1om-mpss-linux/usr/lib64 /opt/mpss/3.4.2/sysroots/k1om-mpss-linux/usr/lib` is needed on systems whose host compiler returns `../lib` on `$ gcc -print-multi-os-directory` instead of `../lib64`, e.g. on Ubuntu. MPSS is bound to `../lib64`, because RPMs shipped by Intel are for RedHat/SuSE family. On Debian/Ubuntu this fix is required.

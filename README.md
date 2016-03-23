@@ -2,7 +2,7 @@
 
 This repository contains the source code for GCC 5.1.1 branch used by Intel in their Manycore Platform Software Stack 3.6.1 (MPSS). The provided build instructions could be used to e.g. create a modified compiler (include more languages, Fortran for MIC, etc.), or to backport newer version of GCC compiler to older MPSS, if older MPSS is preferred by HPC center/provider.
 
-Build instructions below are intended to build GCC from MPSS 3.6.1 for MPSS 3.4.1. An important advantage of GCC 5.1.1 is availability of AVX512 builtins, e.g. `__m512d` and AVX512 intrinsics, enabling the use of GCC as a replacement of Intel's ICC in case of explicit vector programming.
+Build instructions below are intended to build GCC from MPSS 3.6.1 for MPSS 3.4.1. An important advantage of GCC 5.1.1 is the availability of AVX512 builtins, e.g. `__m512d` and AVX512 intrinsics, enabling the use of GCC as a replacement for Intel's ICC in case of explicit vector programming.
 
 ```
 $ git clone https://github.com/apc-llc/gcc-5.1.1-knc.git

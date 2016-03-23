@@ -2349,7 +2349,7 @@ case "${host}" in
 
     # Some targets support both -fPIC and -fpic, but prefer the latter.
     # FIXME: Why?
-    i[34567]86-*-* | x86_64-*-*)
+    i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 	PICFLAG=-fpic
 	;;
     # FIXME: Override -fPIC default in libgcc only?
@@ -4437,7 +4437,7 @@ Valid choices are 'yes', 'bid', 'dpd', and 'no'." "$LINENO" 5 ;;
 else
 
   case $host in
-    powerpc*-*-linux* | i?86*-*-linux* | x86_64*-*-linux* | s390*-*-linux* | \
+    powerpc*-*-linux* | i?86*-*-linux* | x86_64*-*-linux* | k1om*-*-linux* | s390*-*-linux* | \
     i?86*-*-gnu* | \
     i?86*-*-mingw* | x86_64*-*-mingw* | \
     i?86*-*-cygwin* | x86_64*-*-cygwin*)
@@ -4457,7 +4457,7 @@ fi
 case x$enable_decimal_float in
   xyes)
     case $host in
-      i?86*-*-* | x86_64*-*-*)
+      i?86*-*-* | x86_64*-*-*| k1om*-*-*)
 	enable_decimal_float=bid
 	;;
       *)
@@ -4572,7 +4572,7 @@ void foo ()
 _ACEOF
 CFLAGS_hold=$CFLAGS
 CFLAGS="--save-temps -fexceptions"
-libgcc_cv_lib_sjlj_exceptions=unknown
+libgcc_cv_lib_sjlj_exceptions=no
 if ac_fn_c_try_compile; then :
   if grep _Unwind_SjLj_Resume conftest.s >/dev/null 2>&1; then
     libgcc_cv_lib_sjlj_exceptions=yes

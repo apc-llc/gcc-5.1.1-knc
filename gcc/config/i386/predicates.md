@@ -1370,7 +1370,7 @@
 
 ;; Return true if OP is misaligned memory operand
 (define_predicate "misaligned_operand"
-  (and (match_code "mem")
+  (and (match_operand 0 "memory_operand")
        (match_test "MEM_ALIGN (op) < GET_MODE_ALIGNMENT (mode)")))
 
 ;; Return true if OP is a emms operation, known to be a PARALLEL.
@@ -1483,3 +1483,7 @@
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
 	    (match_test "op == constm1_rtx"))))
+
+(define_predicate "mem_align_or_reg_operand"
+  (ior (match_operand 0 "register_operand")
+       (match_operand 0 "aligned_operand")))

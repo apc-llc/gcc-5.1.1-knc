@@ -1020,7 +1020,7 @@ EOF
     vax:Linux:*:*)
 	echo ${UNAME_MACHINE}-dec-linux-${LIBC}
 	exit ;;
-    x86_64:Linux:*:*)
+    x86_64:Linux:*:*|k1om:Linux:*:*)
 	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     xtensa*:Linux:*:*)

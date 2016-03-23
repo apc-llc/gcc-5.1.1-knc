@@ -369,7 +369,7 @@ i[34567]86-*-*)
 		       avx512ifmaintrin.h avx512ifmavlintrin.h avx512vbmiintrin.h
 		       avx512vbmivlintrin.h clwbintrin.h pcommitintrin.h"
 	;;
-x86_64-*-*)
+x86_64-*-* | k1om-*-*)
 	cpu_type=i386
 	c_target_objs="i386-c.o"
 	cxx_target_objs="i386-c.o"
@@ -531,7 +531,7 @@ i[34567]86-*-*)
 	fi
 	tm_file="vxworks-dummy.h ${tm_file}"
 	;;
-x86_64-*-*)
+x86_64-*-* | k1om-*-*)
 	case ${with_abi} in
 	"")
 		if test "x$with_multilib_list" = xmx32; then
@@ -590,7 +590,7 @@ x86_64_archs="amdfam10 athlon64 athlon64-sse3 barcelona bdver1 bdver2 \
 bdver3 bdver4 btver1 btver2 k8 k8-sse3 opteron opteron-sse3 nocona \
 core2 corei7 corei7-avx core-avx-i core-avx2 atom slm nehalem westmere \
 sandybridge ivybridge haswell broadwell bonnell silvermont knl x86-64 \
-native"
+native knc"
 
 # Additional x86 processors supported by --with-cpu=.  Each processor
 # MUST be separated by exactly one space.
@@ -1492,11 +1492,11 @@ i[34567]86-*-linux* | i[34567]86-*-kfreebsd*-gnu | i[34567]86-*-knetbsd*-gnu | i
 		;;
 	esac
 	;;
-x86_64-*-linux* | x86_64-*-kfreebsd*-gnu | x86_64-*-knetbsd*-gnu)
+x86_64-*-linux* | x86_64-*-kfreebsd*-gnu | x86_64-*-knetbsd*-gnu | k1om-*-linux*)
 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h gnu-user.h glibc-stdint.h \
 		 i386/x86-64.h i386/gnu-user-common.h i386/gnu-user64.h"
 	case ${target} in
-	x86_64-*-linux*)
+	x86_64-*-linux* | k1om-*-linux*)
 		tm_file="${tm_file} linux.h linux-android.h i386/linux-common.h i386/linux64.h"
 		extra_options="${extra_options} linux-android.opt"
 		# Assume modern glibc if not targeting Android nor uclibc.
@@ -1515,6 +1515,11 @@ x86_64-*-linux* | x86_64-*-kfreebsd*-gnu | x86_64-*-knetbsd*-gnu)
 		tm_file="${tm_file} knetbsd-gnu.h"
 		;;
 	esac
+	case ${target} in
+	x86_64-k1om-linux* | k1om-*-linux*)
+	  tm_file="${tm_file} i386/linuxk1om.h"
+	  ;;
+	esac;
 	tmake_file="${tmake_file} i386/t-linux64"
 	x86_multilibs="${with_multilib_list}"
 	if test "$x86_multilibs" = "default"; then
@@ -2964,10 +2969,10 @@ m32c-*-elf*)
 esac
 
 case ${target} in
-i[34567]86-*-linux* | x86_64-*-linux*)
+i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
 	tmake_file="${tmake_file} i386/t-pmm_malloc i386/t-i386"
 	;;
-i[34567]86-*-* | x86_64-*-*)
+i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 	tmake_file="${tmake_file} i386/t-gmm_malloc i386/t-i386"
 	;;
 powerpc*-*-* | rs6000-*-*)
@@ -3172,6 +3177,10 @@ case ${target} in
 	;;
     esac
     ;;
+  x86_64-k1om-linux* | k1om-*-linux*)
+    arch=knc
+    cpu=knc
+    ;;
   x86_64-*-*)
     case ${target_noncanonical} in
       bdver4-*)
@@ -3242,6 +3251,9 @@ esac
 # This block sets nothing except for with_cpu.
 if test x$with_cpu = x ; then
   case ${target} in
+    k1om-*-*)
+      with_cpu=knc
+      ;;
     i[34567]86-*-*|x86_64-*-*)
       with_cpu=$cpu
       ;;
@@ -3343,6 +3355,9 @@ if test x$with_arch = x ; then
 	with_arch=pentium4
       fi
       ;;
+    k1om-*-*)
+      with_arch=knc
+      ;;
     x86_64-*-*)
       with_arch=$arch
       ;;
@@ -3360,7 +3375,7 @@ if test x$with_arch = x ; then
       # Default arch is set via TARGET_SUBTARGET32_ISA_DEFAULT
       # and TARGET_SUBTARGET64_ISA_DEFAULT in config/i386/darwin.h.
       ;;
-    i[34567]86-*-*|x86_64-*-*)
+    i[34567]86-*-*|x86_64-*-*|k1om-*-*)
       if test x$with_arch_32 != x || test x$with_arch_64 != x; then
 	if test x$with_arch_32 = x; then
 	  with_arch_32=$with_arch
@@ -3410,7 +3425,7 @@ fi
 # Support --with-fpmath.
 if test x$with_fpmath != x; then
   case ${target} in
-    i[34567]86-*-* | x86_64-*-*)
+    i[34567]86-*-* | x86_64-*-* | k1om-*-*)
       case ${with_fpmath} in
       avx)
 	tm_file="${tm_file} i386/avxmath.h"
@@ -3798,14 +3813,14 @@ case "${target}" in
 		esac
 		;;
 
-	i[34567]86-*-* | x86_64-*-*)
+	i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 		supported_defaults="abi arch arch_32 arch_64 cpu cpu_32 cpu_64 tune tune_32 tune_64"
 		for which in arch arch_32 arch_64 cpu cpu_32 cpu_64 tune tune_32 tune_64; do
 			eval "val=\$with_$which"
 			case " $x86_archs " in
 			*" ${val} "*)
 				case "${target}" in
-				  x86_64-*-*)
+				  x86_64-*-* | k1om-*-*)
 				      case "x$which" in
 					*_32)
 						;;
@@ -4220,7 +4235,7 @@ case ${target} in
 
 	i[34567]86-*-darwin* | x86_64-*-darwin*)
 		;;
-	i[34567]86-*-linux* | x86_64-*-linux*)
+	i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
 		tmake_file="$tmake_file i386/t-linux"
 		;;
 	i[34567]86-*-kfreebsd*-gnu | x86_64-*-kfreebsd*-gnu)
@@ -4381,7 +4396,7 @@ then
 fi
 
 case ${target} in
-i[34567]86-*-* | x86_64-*-*)
+i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 	if test x$enable_as_accelerator = xyes; then
 		extra_programs="mkoffload\$(exeext)"
 	fi

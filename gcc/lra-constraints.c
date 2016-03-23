@@ -1107,6 +1107,21 @@ check_and_process_move (bool *change_p, bool *sec_mem_p ATTRIBUTE_UNUSED)
     return false;
   if (sclass == NO_REGS && dclass == NO_REGS)
     return false;
+
+  sri.prev_sri = NULL;
+  sri.icode = CODE_FOR_nothing;
+  sri.extra_cost = 0;
+  secondary_class = NO_REGS;
+
+  if (sclass != NO_REGS
+      && REG_P (sreg)
+      && MEM_P (dreg)
+      && offsettable_nonstrict_memref_p (dest))
+    secondary_class
+      = (enum reg_class) targetm.secondary_reload (false, dest,
+						   (reg_class_t) sclass,
+						   GET_MODE (src), &sri);
+
 #ifdef SECONDARY_MEMORY_NEEDED
   if (SECONDARY_MEMORY_NEEDED (sclass, dclass, GET_MODE (src))
 #ifdef SECONDARY_MEMORY_NEEDED_MODE
@@ -1119,58 +1134,56 @@ check_and_process_move (bool *change_p, bool *sec_mem_p ATTRIBUTE_UNUSED)
       return false;
     }
 #endif
-  if (! REG_P (dreg) || ! REG_P (sreg))
-    return false;
-  sri.prev_sri = NULL;
-  sri.icode = CODE_FOR_nothing;
-  sri.extra_cost = 0;
-  secondary_class = NO_REGS;
-  /* Set up hard register for a reload pseudo for hook
-     secondary_reload because some targets just ignore unassigned
-     pseudos in the hook.  */
-  if (dclass != NO_REGS && lra_get_regno_hard_regno (REGNO (dreg)) < 0)
+  if (REG_P (dreg) && REG_P (sreg))
     {
-      dregno = REGNO (dreg);
-      reg_renumber[dregno] = ira_class_hard_regs[dclass][0];
-    }
-  else
-    dregno = -1;
-  if (sclass != NO_REGS && lra_get_regno_hard_regno (REGNO (sreg)) < 0)
-    {
-      sregno = REGNO (sreg);
-      reg_renumber[sregno] = ira_class_hard_regs[sclass][0];
-    }
-  else
-    sregno = -1;
-  if (sclass != NO_REGS)
-    secondary_class
-      = (enum reg_class) targetm.secondary_reload (false, dest,
-						   (reg_class_t) sclass,
-						   GET_MODE (src), &sri);
-  if (sclass == NO_REGS
-      || ((secondary_class != NO_REGS || sri.icode != CODE_FOR_nothing)
-	  && dclass != NO_REGS))
-    {
-      enum reg_class old_sclass = secondary_class;
-      secondary_reload_info old_sri = sri;
+      /* Set up hard register for a reload pseudo for hook
+	 secondary_reload because some targets just ignore unassigned
+	 pseudos in the hook.  */
+      if (dclass != NO_REGS && lra_get_regno_hard_regno (REGNO (dreg)) < 0)
+	{
+	  dregno = REGNO (dreg);
+	  reg_renumber[dregno] = ira_class_hard_regs[dclass][0];
+	}
+      else
+	dregno = -1;
+      if (sclass != NO_REGS && lra_get_regno_hard_regno (REGNO (sreg)) < 0)
+	{
+	  sregno = REGNO (sreg);
+	  reg_renumber[sregno] = ira_class_hard_regs[sclass][0];
+	}
+      else
+	sregno = -1;
+      if (sclass != NO_REGS)
+	secondary_class
+	  = (enum reg_class) targetm.secondary_reload (false, dest,
+						       (reg_class_t) sclass,
+						       GET_MODE (src), &sri);
+      if (sclass == NO_REGS
+	  || ((secondary_class != NO_REGS || sri.icode != CODE_FOR_nothing)
+	      && dclass != NO_REGS))
+	{
+	  enum reg_class old_sclass = secondary_class;
+	  secondary_reload_info old_sri = sri;
 
-      sri.prev_sri = NULL;
-      sri.icode = CODE_FOR_nothing;
-      sri.extra_cost = 0;
-      secondary_class
-	= (enum reg_class) targetm.secondary_reload (true, src,
-						     (reg_class_t) dclass,
-						     GET_MODE (src), &sri);
-      /* Check the target hook consistency.  */
-      lra_assert
-	((secondary_class == NO_REGS && sri.icode == CODE_FOR_nothing)
-	 || (old_sclass == NO_REGS && old_sri.icode == CODE_FOR_nothing)
-	 || (secondary_class == old_sclass && sri.icode == old_sri.icode));
+	  sri.prev_sri = NULL;
+	  sri.icode = CODE_FOR_nothing;
+	  sri.extra_cost = 0;
+	  secondary_class
+	    = (enum reg_class) targetm.secondary_reload (true, src,
+							 (reg_class_t) dclass,
+							 GET_MODE (src), &sri);
+	  /* Check the target hook consistency.  */
+	  lra_assert
+	    ((secondary_class == NO_REGS && sri.icode == CODE_FOR_nothing)
+	     || (old_sclass == NO_REGS && old_sri.icode == CODE_FOR_nothing)
+	     || (secondary_class == old_sclass && sri.icode == old_sri.icode));
+	}
+      if (sregno >= 0)
+	reg_renumber [sregno] = -1;
+      if (dregno >= 0)
+	reg_renumber [dregno] = -1;
     }
-  if (sregno >= 0)
-    reg_renumber [sregno] = -1;
-  if (dregno >= 0)
-    reg_renumber [dregno] = -1;
+
   if (secondary_class == NO_REGS && sri.icode == CODE_FOR_nothing)
     return false;
   *change_p = true;
@@ -3852,7 +3865,8 @@ curr_insn_transform (bool check_only_p)
 	    }
 	  *loc = new_reg;
 	  if (type != OP_IN
-	      && find_reg_note (curr_insn, REG_UNUSED, old) == NULL_RTX)
+	      && find_reg_note (curr_insn, REG_UNUSED, old) == NULL_RTX
+	      && GET_CODE (old) != SCRATCH)
 	    {
 	      start_sequence ();
 	      lra_emit_move (type == OP_INOUT ? copy_rtx (old) : old, new_reg);
@@ -3868,6 +3882,8 @@ curr_insn_transform (bool check_only_p)
 		break;
 	      }
 	  lra_update_dup (curr_id, i);
+	  /* Rehandle insn to possibly use secondary reload.  */
+	  lra_push_insn (curr_insn);
 	}
       else if (curr_static_id->operand[i].type == OP_IN
 	       && (curr_static_id->operand[goal_alt_matched[i][0]].type

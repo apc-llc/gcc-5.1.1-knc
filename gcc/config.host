@@ -116,10 +116,10 @@ case ${host} in
     esac
     ;;
   i[34567]86-*-* \
-  | x86_64-*-* )
+  | x86_64-*-* | k1om-*-*)
     case ${target} in
       i[34567]86-*-* \
-      | x86_64-*-* )
+      | x86_64-*-* | k1om-*-*)
 	host_extra_gcc_objs="driver-i386.o"
 	host_xmake_file="${host_xmake_file} i386/x-i386"
 	;;

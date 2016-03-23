@@ -124,7 +124,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
 	}
       return __position._M_const_cast();
     }
-
+#if !defined(__INTEL_COMPILER)
   template<typename _Tp, typename _Alloc>
     template<typename _InputIterator, typename>
       typename list<_Tp, _Alloc>::iterator
@@ -141,6 +141,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
 	  }
 	return __position._M_const_cast();
       }
+#endif
 #endif
 
   template<typename _Tp, typename _Alloc>

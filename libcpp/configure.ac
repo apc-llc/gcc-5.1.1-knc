@@ -185,7 +185,7 @@ if test $enable_canonical_system_headers != no; then
 fi
 
 case $target in
-  i?86-* | x86_64-*)
+  i?86-* | x86_64-* | k1om-*)
     AC_TRY_COMPILE([], [asm ("pcmpestri %0, %%xmm0, %%xmm1" : : "i"(0))],
       [AC_DEFINE([HAVE_SSE4], [1],
 		 [Define to 1 if you can assemble SSE4 insns.])])

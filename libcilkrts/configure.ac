@@ -126,7 +126,7 @@ esac
 # contains information on what's needed
 case "${target}" in
 
-  x86_64-*-*)
+  x86_64-*-*|k1om-*-*)
     config_dir="x86"
     ;;
 

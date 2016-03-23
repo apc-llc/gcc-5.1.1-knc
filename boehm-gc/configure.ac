@@ -133,7 +133,7 @@ case "$THREADS" in
     THREADS=posix
     THREADLIBS=-lpthread
     case "$host" in
-     x86-*-linux* | ia64-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | alpha-*-linux*)
+     x86-*-linux* | ia64-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | k1om-*-linux* | alpha-*-linux*)
 	AC_DEFINE(GC_LINUX_THREADS,1,[support for Xavier Leroy's Linux threads])
 	AC_DEFINE(_REENTRANT,1,[Use reentrant code])
         if test "${enable_parallel_mark}" = yes; then
@@ -486,7 +486,7 @@ AC_ARG_ENABLE(gc-debug,
       ia64-*-linux* )
 	AC_DEFINE(MAKE_BACK_GRAPH,1,[Enable GC_PRINT_BACK_HEIGHT environment variable])
       ;;
-      x86-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* )
+      x86-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | k1om-*-linux*)
 	AC_DEFINE(MAKE_BACK_GRAPH,1)
 	AC_MSG_WARN("Client must not use -fomit-frame-pointer.")
 	AC_DEFINE(SAVE_CALL_COUNT, 8, [number of call frames saved with objects allocated through the debugging interface])

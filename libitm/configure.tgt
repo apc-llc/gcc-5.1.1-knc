@@ -34,7 +34,7 @@ if test "$gcc_cv_have_tls" = yes ; then
     # For x86, we use slots in the TCB head for most of our TLS.
     # The setup of those slots in beginTransaction can afford to
     # use the global-dynamic model.
-    i[456]86-*-linux* | x86_64-*-linux*)
+    i[456]86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
 	;;
     
     *-*-linux*)
@@ -99,7 +99,7 @@ case "${target_cpu}" in
 	ARCH=sparc
 	;;
 
-  x86_64)
+  x86_64|k1om)
 	case " ${CC} ${CFLAGS} " in
 	  *" -m32 "*)
 	    XCFLAGS="${XCFLAGS} -march=i486 -mtune=generic"

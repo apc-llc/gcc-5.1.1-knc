@@ -4832,7 +4832,7 @@ case "${target}" in
 
     # Some targets support both -fPIC and -fpic, but prefer the latter.
     # FIXME: Why?
-    i[34567]86-*-* | x86_64-*-*)
+    i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 	PICFLAG_FOR_TARGET=-fpic
 	;;
     # FIXME: Override -fPIC default in libgcc only?
@@ -7102,7 +7102,7 @@ Valid choices are 'yes', 'bid', 'dpd', and 'no'." "$LINENO" 5 ;;
 else
 
   case $target in
-    powerpc*-*-linux* | i?86*-*-linux* | x86_64*-*-linux* | s390*-*-linux* | \
+    powerpc*-*-linux* | i?86*-*-linux* | x86_64*-*-linux* | k1om-*-linux* | s390*-*-linux* | \
     i?86*-*-gnu* | \
     i?86*-*-mingw* | x86_64*-*-mingw* | \
     i?86*-*-cygwin* | x86_64*-*-cygwin*)
@@ -7122,7 +7122,7 @@ fi
 case x$enable_decimal_float in
   xyes)
     case $target in
-      i?86*-*-* | x86_64*-*-*)
+      i?86*-*-* | x86_64*-*-* | k1om-*-*)
 	enable_decimal_float=bid
 	;;
       *)
@@ -13909,7 +13909,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|k1om-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -13953,7 +13953,7 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*kfreebsd*-gnu)
 	    LD="${LD-ld} -m elf_x86_64_fbsd"
 	    ;;
-	  x86_64-*linux*)
+	  x86_64-*linux* | k1om-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
 	  powerpcle-*linux*)
@@ -22071,7 +22071,7 @@ else
   x86_64-*-linux-gnux32)
         gcc_cv_as_flags=--x32
     ;;
-  x86_64-*-linux*)
+  x86_64-*-linux* | k1om-*-linux*)
         gcc_cv_as_flags=--64
     ;;
   powerpc*-*-darwin*)
@@ -22531,7 +22531,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker read-only and read-write section mixing" >&5
 $as_echo_n "checking linker read-only and read-write section mixing... " >&6; }
-gcc_cv_ld_ro_rw_mix=unknown
+gcc_cv_ld_ro_rw_mix=read-write
 if test $in_tree_ld = yes ; then
   if test "$gcc_cv_gld_major_version" -eq 2 -a "$gcc_cv_gld_minor_version" -ge 10 -o "$gcc_cv_gld_major_version" -gt 2 \
      && test $in_tree_ld_is_elf = yes; then
@@ -23485,7 +23485,7 @@ foo:	.long	25
 	tls_first_major=2
 	tls_first_minor=17
 	;;
-  i[34567]86-*-* | x86_64-*-*)
+  i[34567]86-*-* | x86_64-*-* | k1om-*-*)
     case "$target" in
       i[34567]86-*-solaris2.* | x86_64-*-solaris2.1[0-9]*)
 	on_solaris=yes
@@ -23528,7 +23528,7 @@ foo:	.long	25
 	subl	\$foo@tpoff, %eax
 	leal	foo@ntpoff(%ecx), %eax"
 	;;
-      x86_64-*-*)
+      x86_64-*-* | k1om-*-*)
 	if test x$on_solaris = xyes; then
 	  case $gas_flag in
 	    yes) tls_as_opt="$tls_as_opt --64" ;;
@@ -24684,7 +24684,7 @@ $as_echo "#define HAVE_AS_LEON 1" >>confdefs.h
 fi
     ;;
 
-  i[34567]86-*-* | x86_64-*-*)
+  i[34567]86-*-* | x86_64-*-* | k1om-*-*)
     case $target_os in
       cygwin*)
 	# Full C++ conformance when using a shared libstdc++-v3 requires some
@@ -27106,7 +27106,7 @@ if test $gcc_cv_ld_pie = yes ; then
   elif test x$gcc_cv_as != x -a x$gcc_cv_ld != x ; then
     # Check if linker supports -pie option with copy reloc
     case "$target" in
-    i?86-*-linux* | x86_64-*-linux*)
+    i?86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
       cat > conftest1.s <<EOF
 	.globl	a_glob
 	.data

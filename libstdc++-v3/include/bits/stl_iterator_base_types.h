@@ -137,7 +137,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
    *  argument.  Specialized versions for pointers and pointers-to-const
    *  provide tighter, more correct semantics.
   */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
   // _GLIBCXX_RESOLVE_LIB_DEFECTS
   // 2408. SFINAE-friendly common_type/iterator_traits is missing in C++14
   template<typename _Iterator, typename = __void_t<>>

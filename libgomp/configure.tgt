@@ -82,7 +82,7 @@ if test x$enable_linux_futex = xyes; then
     # Similar jiggery-pokery for x86_64 multilibs, except here we
     # can't rely on the --with-arch configure option, since that
     # applies to the 64-bit side.
-    x86_64-*-linux*)
+    x86_64-*-linux*|k1om-*-linux*)
 	config_path="linux/x86 linux posix"
 	case " ${CC} ${CFLAGS} " in
 	  *" -m32 "*)

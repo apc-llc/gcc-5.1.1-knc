@@ -115,7 +115,7 @@ namespace __debug
       : _Base(__n, __value, __a) { }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -162,7 +162,7 @@ namespace __debug
       }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -428,7 +428,7 @@ namespace __debug
       }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 	iterator

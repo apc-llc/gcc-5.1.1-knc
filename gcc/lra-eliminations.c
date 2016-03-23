@@ -910,7 +910,7 @@ eliminate_regs_in_insn (rtx_insn *insn, bool replace_p, bool first_p,
   lra_insn_recog_data_t id;
   struct lra_static_insn_data *static_id;
 
-  if (icode < 0 && asm_noperands (PATTERN (insn)) < 0 && ! DEBUG_INSN_P (insn))
+  if (icode < 0 && asm_noperands (PATTERN (insn)) < 0)
     {
       lra_assert (GET_CODE (PATTERN (insn)) == USE
 		  || GET_CODE (PATTERN (insn)) == CLOBBER

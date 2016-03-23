@@ -118,7 +118,7 @@ moxie*)	cpu_type=moxie
 i[34567]86-*-*)
 	cpu_type=i386
 	;;
-x86_64-*-*)
+x86_64-*-* | k1om-*-*)
 	cpu_type=i386
 	;;
 ia64-*-*)
@@ -593,7 +593,7 @@ i[34567]86-*-kfreebsd*-gnu | i[34567]86-*-knetbsd*-gnu | i[34567]86-*-gnu* | i[3
 	tmake_file="${tmake_file} i386/t-crtpc i386/t-crtfm i386/t-crtstuff t-dfprules"
 	tm_file="${tm_file} i386/elf-lib.h"
 	;;
-x86_64-*-linux*)
+x86_64-*-linux* | k1om-*-linux*)
 	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
 	tmake_file="${tmake_file} i386/t-crtpc i386/t-crtfm i386/t-crtstuff t-dfprules"
 	tm_file="${tm_file} i386/elf-lib.h"
@@ -1296,13 +1296,13 @@ nvptx-*)
 esac
 
 case ${host} in
-i[34567]86-*-* | x86_64-*-*)
+i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 	tmake_file="${tmake_file} i386/t-cpuinfo"
 	;;
 esac
 
 case ${host} in
-i[34567]86-*-linux* | x86_64-*-linux* | \
+i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux* | \
   i[34567]86-*-kfreebsd*-gnu | x86_64-*-kfreebsd*-gnu | \
   i[34567]86-*-knetbsd*-gnu | \
   i[34567]86-*-gnu*)
@@ -1316,7 +1316,7 @@ esac
 case ${host} in
 i[34567]86-*-darwin* | x86_64-*-darwin* | \
   i[34567]86-*-kfreebsd*-gnu | x86_64-*-kfreebsd*-gnu | \
-  i[34567]86-*-linux* | x86_64-*-linux* | \
+  i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux* | \
   i[34567]86-*-gnu* | \
   i[34567]86-*-solaris2* | x86_64-*-solaris2.1[0-9]* | \
   i[34567]86-*-cygwin* | x86_64-*-cygwin* | \
@@ -1333,11 +1333,20 @@ i[34567]86-*-darwin* | x86_64-*-darwin* | \
 esac
 
 case ${host} in
-i[34567]86-*-linux* | x86_64-*-linux*)
+i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
 	# Provide backward binary compatibility for 64bit Linux/x86.
 	if test "${host_address}" = 64; then
 		tmake_file="${tmake_file} i386/${host_address}/t-softfp-compat"
 	fi
 	tm_file="${tm_file} i386/value-unwind.h"
 	;;
+esac
+
+
+case ${host} in
+x86_64-k1om-linux* | k1om-*-linux*)
+	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
+	tmake_file="${tmake_file} i386/32/t-softfp i386/t-crtpc i386/t-crtfm i386/t-crtstuff t-dfprules t-fpbit"
+	tm_file="${tm_file} i386/elf-lib.h"
+	md_unwind_header=i386/linux-unwind.h
 esac

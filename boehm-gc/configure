@@ -6770,7 +6770,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|k1om-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -6814,7 +6814,7 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*kfreebsd*-gnu)
 	    LD="${LD-ld} -m elf_x86_64_fbsd"
 	    ;;
-	  x86_64-*linux*)
+	  x86_64-*linux*|k1om-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
 	  powerpcle-*linux*)
@@ -14731,7 +14731,7 @@ case "$THREADS" in
     THREADS=posix
     THREADLIBS=-lpthread
     case "$host" in
-     x86-*-linux* | ia64-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | alpha-*-linux*)
+     x86-*-linux* | ia64-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | k1om-*-linux* | alpha-*-linux*)
 
 $as_echo "#define GC_LINUX_THREADS 1" >>confdefs.h
 
@@ -15305,7 +15305,7 @@ $as_echo "#define DBG_HDRS_ALL 1" >>confdefs.h
 $as_echo "#define MAKE_BACK_GRAPH 1" >>confdefs.h
 
       ;;
-      x86-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* )
+      x86-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | k1om-*linux*)
 	$as_echo "#define MAKE_BACK_GRAPH 1" >>confdefs.h
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Client must not use -fomit-frame-pointer.\"" >&5

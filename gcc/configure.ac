@@ -3039,7 +3039,7 @@ foo:	.long	25
 	tls_first_major=2
 	tls_first_minor=17
 	;;
-  i[34567]86-*-* | x86_64-*-*)
+  i[34567]86-*-* | x86_64-*-* | k1om-*-*)
     case "$target" in
       i[34567]86-*-solaris2.* | x86_64-*-solaris2.1[0-9]*)
 	on_solaris=yes
@@ -3083,7 +3083,7 @@ foo:	.long	25
 	subl	\$foo@tpoff, %eax
 	leal	foo@ntpoff(%ecx), %eax"
 	;;
-      x86_64-*-*)
+      x86_64-*-* | k1om-*-*)
 	if test x$on_solaris = xyes; then
 	  case $gas_flag in
 	    yes) tls_as_opt="$tls_as_opt --64" ;;
@@ -3794,7 +3794,7 @@ foo:
     ;;
 
 changequote(,)dnl
-  i[34567]86-*-* | x86_64-*-*)
+  i[34567]86-*-* | x86_64-*-* | k1om-*-*)
 changequote([,])dnl
     case $target_os in
       cygwin*)
@@ -4715,7 +4715,7 @@ if test $gcc_cv_ld_pie = yes ; then
   elif test x$gcc_cv_as != x -a x$gcc_cv_ld != x ; then
     # Check if linker supports -pie option with copy reloc
     case "$target" in
-    i?86-*-linux* | x86_64-*-linux*)
+    i?86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
       cat > conftest1.s <<EOF
 	.globl	a_glob
 	.data
@@ -4967,7 +4967,7 @@ fi
 case "$target" in
   *-*-solaris2.1[[1-9]]*)
     case "$target" in
-    i?86-*-* | x86_64-*-*)
+    i?86-*-* | x86_64-*-* | k1om-*-*)
       if echo "$ld_ver" | grep GNU > /dev/null; then
         # Doesn't work with gld on Solaris/x86 due to PR ld/12320.
         gcc_cv_ld_as_needed=no

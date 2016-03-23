@@ -653,7 +653,7 @@ template<typename _Alloc>
     }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
     template<typename _InputIterator,
 	     typename = std::_RequireInputIter<_InputIterator>>
       vector(_InputIterator __first, _InputIterator __last,
@@ -750,7 +750,7 @@ template<typename _Alloc>
     assign(size_type __n, const bool& __x)
     { _M_fill_assign(__n, __x); }
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
     template<typename _InputIterator,
 	     typename = std::_RequireInputIter<_InputIterator>>
       void
@@ -962,7 +962,7 @@ template<typename _Alloc>
       return begin() + __n;
     }
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
     template<typename _InputIterator,
 	     typename = std::_RequireInputIter<_InputIterator>>
       iterator

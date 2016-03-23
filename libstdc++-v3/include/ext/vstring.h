@@ -233,7 +233,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
        *  @param  __end  End of range.
        *  @param  __a  Allocator to use (default is default allocator).
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -770,7 +770,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
        *
        *  Appends characters in the range [first,last) to this string.
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -899,7 +899,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
        *  Sets value of string to characters in the range
        *  [first,last).
       */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -963,7 +963,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
       {	this->replace(__p, __p, __n, __c);  }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       /**
        *  @brief  Insert a range of characters.
        *  @param __p  Const_iterator referencing location in string to
@@ -1471,7 +1471,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
        *  of result exceeds max_size(), length_error is thrown.  The
        *  value of the string doesn't change if an error is thrown.
       */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<class _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
         __versa_string&

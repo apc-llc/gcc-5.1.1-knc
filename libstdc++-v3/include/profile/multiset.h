@@ -87,7 +87,7 @@ namespace __profile
 			const _Allocator& __a = _Allocator())
       : _Base(__comp, __a) { }
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else
@@ -298,7 +298,7 @@ namespace __profile
       }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
 #else

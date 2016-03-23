@@ -4557,7 +4557,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
 	for ac_word in $CC $CFLAGS $CPPFLAGS $LDFLAGS; do
 	 if test -n "$ac_prev"; then
 	   case $ac_word in
-	     i?86 | x86_64 | ppc | ppc64)
+	     i?86 | x86_64 | k1om | ppc | ppc64)
 	       if test -z "$ac_arch" || test "$ac_arch" = "$ac_word"; then
 		 ac_arch=$ac_word
 	       else
@@ -4931,7 +4931,7 @@ case "${host}" in
 
     # Some targets support both -fPIC and -fpic, but prefer the latter.
     # FIXME: Why?
-    i[34567]86-*-* | x86_64-*-*)
+    i[34567]86-*-* | x86_64-*-*| k1om-*-*)
 	PICFLAG=-fpic
 	;;
     # FIXME: Override -fPIC default in libgcc only?

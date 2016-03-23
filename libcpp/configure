@@ -5172,7 +5172,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
 	for ac_word in $CC $CFLAGS $CPPFLAGS $LDFLAGS; do
 	 if test -n "$ac_prev"; then
 	   case $ac_word in
-	     i?86 | x86_64 | ppc | ppc64)
+	     i?86 | x86_64 | k1om | ppc | ppc64)
 	       if test -z "$ac_arch" || test "$ac_arch" = "$ac_word"; then
 		 ac_arch=$ac_word
 	       else
@@ -7221,7 +7221,7 @@ $as_echo "#define ENABLE_CANONICAL_SYSTEM_HEADERS 1" >>confdefs.h
 fi
 
 case $target in
-  i?86-* | x86_64-*)
+  i?86-* | x86_64-* | k1om-*)
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 

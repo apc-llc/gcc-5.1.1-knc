@@ -395,7 +395,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
        *  used, then this will do at most 2N calls to the copy
        *  constructor, and logN memory reallocations.
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
         vector(_InputIterator __first, _InputIterator __last,
@@ -500,7 +500,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
        *  that the resulting %vector's size is the same as the number
        *  of elements assigned.  Old data may be lost.
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
         void
@@ -1073,7 +1073,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       { _M_fill_insert(__position, __n, __x); }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       /**
        *  @brief  Inserts a range into the %vector.
        *  @param  __position  A const_iterator into the %vector.

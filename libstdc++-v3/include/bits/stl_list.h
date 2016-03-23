@@ -691,7 +691,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
        *  [@a __first,@a __last).  This is linear in N (where N is
        *  distance(@a __first,@a __last)).
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
         list(_InputIterator __first, _InputIterator __last,
@@ -787,7 +787,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
        *  that the resulting %list's size is the same as the number of
        *  elements assigned.  Old data may be lost.
        */
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       template<typename _InputIterator,
 	       typename = std::_RequireInputIter<_InputIterator>>
         void
@@ -1234,7 +1234,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
       }
 #endif
 
-#if __cplusplus >= 201103L
+#if !defined(__INTEL_COMPILER) && __cplusplus >= 201103L
       /**
        *  @brief  Inserts a range into the %list.
        *  @param  __position  A const_iterator into the %list.

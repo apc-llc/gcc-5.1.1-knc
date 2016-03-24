@@ -4253,12 +4253,14 @@ ix86_option_override_internal (bool main_args_p,
 	  ix86_isa_flags &= ~mic_isa_bit;
 	}
     }
-
-  /* For sane SSE instruction set generation we need fcomi instruction.
-     It is safe to enable all CMOVE instructions.  Also, RDRAND intrinsic
-     expands to a sequence that includes conditional move. */
-  if (TARGET_SSE || TARGET_RDRND)
-    TARGET_CMOV = 1;
+  else
+    {
+      /* For sane SSE instruction set generation we need fcomi instruction.
+         It is safe to enable all CMOVE instructions.  Also, RDRAND intrinsic
+         expands to a sequence that includes conditional move. */
+      if (TARGET_SSE || TARGET_RDRND)
+        TARGET_CMOV = 1;
+    }
 
   /* Figure out what ASM_GENERATE_INTERNAL_LABEL builds as a prefix.  */
   {

@@ -514,7 +514,7 @@ extern unsigned char ix86_arch_features[X86_ARCH_LAST];
 /* For sane SSE instruction set generation we need fcomi instruction.
    It is safe to enable all CMOVE instructions.  Also, RDRAND intrinsic
    expands to a sequence that includes conditional move. */
-#define TARGET_CMOVE		(TARGET_CMOV || TARGET_SSE || TARGET_RDRND)
+#define TARGET_CMOVE		((TARGET_CMOV || TARGET_SSE || TARGET_RDRND) && !TARGET_KNC)
 
 #define TARGET_FISTTP		(TARGET_SSE3 && TARGET_80387)
 

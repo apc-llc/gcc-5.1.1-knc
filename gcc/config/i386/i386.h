@@ -122,7 +122,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define TARGET_XSAVES_P(x)	TARGET_ISA_XSAVES_P(x)
 #define TARGET_PCLMUL	TARGET_ISA_PCLMUL
 #define TARGET_PCLMUL_P(x)	TARGET_ISA_PCLMUL_P(x)
-#define TARGET_CMPXCHG16B	(TARGET_ISA_CX16 && !TARGET_ISA_KNC)
+#define TARGET_CMPXCHG16B	TARGET_ISA_CX16
 #define TARGET_CMPXCHG16B_P(x)	TARGET_ISA_CX16_P(x)
 #define TARGET_FSGSBASE	TARGET_ISA_FSGSBASE
 #define TARGET_FSGSBASE_P(x)	TARGET_ISA_FSGSBASE_P(x)
@@ -154,11 +154,6 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define TARGET_PCOMMIT_P(x)	TARGET_ISA_PCOMMIT_P(x)
 #define TARGET_CLWB	TARGET_ISA_CLWB
 #define TARGET_CLWB_P(x)	TARGET_ISA_CLWB_P(x)
-#define TARGET_KNF      TARGET_ISA_KNF
-#define TARGET_KNF_P(x)	TARGET_ISA_KNF_P(x)
-#define TARGET_KNC      TARGET_ISA_KNC
-#define TARGET_KNC_P(x)	TARGET_ISA_KNC_P(x)
-
 
 #define TARGET_LP64	TARGET_ABI_64
 #define TARGET_LP64_P(x)	TARGET_ABI_64_P(x)
@@ -514,7 +509,7 @@ extern unsigned char ix86_arch_features[X86_ARCH_LAST];
 /* For sane SSE instruction set generation we need fcomi instruction.
    It is safe to enable all CMOVE instructions.  Also, RDRAND intrinsic
    expands to a sequence that includes conditional move. */
-#define TARGET_CMOVE		((TARGET_CMOV || TARGET_SSE || TARGET_RDRND) && !TARGET_KNC)
+#define TARGET_CMOVE		(TARGET_CMOV || TARGET_SSE || TARGET_RDRND)
 
 #define TARGET_FISTTP		(TARGET_SSE3 && TARGET_80387)
 

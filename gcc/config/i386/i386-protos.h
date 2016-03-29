@@ -83,9 +83,6 @@ extern const char *output_adjust_stack_and_probe (rtx);
 extern const char *output_probe_stack_range (rtx, rtx);
 
 extern void ix86_expand_clear (rtx);
-extern void ix86_expand_knc_store (rtx, rtx, rtx, rtx);
-extern void ix86_split_load_mask_reg (rtx, rtx, rtx);
-extern void ix86_expand_move_misalign (enum machine_mode, rtx[]);
 extern void ix86_expand_move (machine_mode, rtx[]);
 extern void ix86_expand_vector_move (machine_mode, rtx[]);
 extern void ix86_expand_vector_move_misalign (machine_mode, rtx[]);

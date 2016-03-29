@@ -1858,84 +1858,6 @@ struct processor_costs intel_cost = {
   1,					/* cond_not_taken_branch_cost.  */
 };
 
-/* Specical cost for KNC. Avoid SSE register stores. Stringops
-   algorithms are specified for 64-bit also. */
-
-static stringop_algs knc_memcpy[2] = {
-  {libcall, {{256, rep_prefix_4_byte, false}, {-1, libcall, false}}},
-  {libcall, {{32, loop, false}, {8192, rep_prefix_8_byte, false}, {-1, libcall, false}}}};
-static stringop_algs knc_memset[2] = {
-  {libcall, {{-1, rep_prefix_4_byte, false}}},
-  {libcall, {{32, loop, false}, {8192, rep_prefix_8_byte, false}, {-1, libcall, false}}}};
-
-static const
-struct processor_costs knc_cost = {
-  COSTS_N_INSNS (1),			/* cost of an add instruction */
-  COSTS_N_INSNS (1),			/* cost of a lea instruction */
-  COSTS_N_INSNS (4),			/* variable shift costs */
-  COSTS_N_INSNS (1),			/* constant shift costs */
-  {COSTS_N_INSNS (11),			/* cost of starting multiply for QI */
-   COSTS_N_INSNS (11),			/*				 HI */
-   COSTS_N_INSNS (11),			/*				 SI */
-   COSTS_N_INSNS (11),			/*				 DI */
-   COSTS_N_INSNS (11)},			/*			      other */
-  0,					/* cost of multiply per each bit set */
-  {COSTS_N_INSNS (25),			/* cost of a divide/mod for QI */
-   COSTS_N_INSNS (25),			/*			    HI */
-   COSTS_N_INSNS (25),			/*			    SI */
-   COSTS_N_INSNS (25),			/*			    DI */
-   COSTS_N_INSNS (25)},			/*			    other */
-  COSTS_N_INSNS (3),			/* cost of movsx */
-  COSTS_N_INSNS (2),			/* cost of movzx */
-  8,					/* "large" insn */
-  6,					/* MOVE_RATIO */
-  6,				     /* cost for loading QImode using movzbl */
-  {2, 4, 2},				/* cost of loading integer registers
-					   in QImode, HImode and SImode.
-					   Relative to reg-reg move (2).  */
-  {2, 4, 2},				/* cost of storing integer registers */
-  2,					/* cost of reg,reg fld/fst */
-  {2, 2, 6},				/* cost of loading fp registers
-					   in SFmode, DFmode and XFmode */
-  {4, 4, 6},				/* cost of storing fp registers
-					   in SFmode, DFmode and XFmode */
-  8,					/* cost of moving MMX register */
-  {8, 8},				/* cost of loading MMX registers
-					   in SImode and DImode */
-  {8, 8},				/* cost of storing MMX registers
-					   in SImode and DImode */
-  2,					/* cost of moving SSE register */
-  {4, 8, 16},				/* cost of loading SSE registers
-					   in SImode, DImode and TImode */
-  {4096, 4096, 4096},			/* cost of storing SSE registers
-					   in SImode, DImode and TImode */
-  4096,					/* MMX or SSE register to integer */
-  8,					/* size of l1 cache.  */
-  8,					/* size of l2 cache  */
-  0,					/* size of prefetch block */
-  0,					/* number of parallel prefetches */
-  2,					/* Branch cost */
-  COSTS_N_INSNS (3),			/* cost of FADD and FSUB insns.  */
-  COSTS_N_INSNS (3),			/* cost of FMUL instruction.  */
-  COSTS_N_INSNS (39),			/* cost of FDIV instruction.  */
-  COSTS_N_INSNS (1),			/* cost of FABS instruction.  */
-  COSTS_N_INSNS (1),			/* cost of FCHS instruction.  */
-  COSTS_N_INSNS (70),			/* cost of FSQRT instruction.  */
-  knc_memcpy,
-  knc_memset,
-  1,					/* scalar_stmt_cost.  */
-  1,					/* scalar load_cost.  */
-  1,					/* scalar_store_cost.  */
-  1,					/* vec_stmt_cost.  */
-  1,					/* vec_to_scalar_cost.  */
-  1,					/* scalar_to_vec_cost.  */
-  1,					/* vec_align_load_cost.  */
-  2,					/* vec_unalign_load_cost.  */
-  1,					/* vec_store_cost.  */
-  3,					/* cond_taken_branch_cost.  */
-  1,					/* cond_not_taken_branch_cost.  */
-};
-
 /* Generic should produce code tuned for Core-i7 (and newer chips)
    and btver1 (and newer chips).  */
 
@@ -3257,7 +3179,6 @@ ix86_option_override_internal (bool main_args_p,
 #define PTA_AVX512VBMI		(HOST_WIDE_INT_1 << 54)
 #define PTA_CLWB		(HOST_WIDE_INT_1 << 55)
 #define PTA_PCOMMIT		(HOST_WIDE_INT_1 << 56)
-#define PTA_KNC			(HOST_WIDE_INT_1 << 57)
 
 #define PTA_CORE2 \
   (PTA_64BIT | PTA_MMX | PTA_SSE | PTA_SSE2 | PTA_SSE3 | PTA_SSSE3 \
@@ -3423,9 +3344,6 @@ ix86_option_override_internal (bool main_args_p,
 	| PTA_BMI | PTA_F16C | PTA_MOVBE | PTA_PRFCHW
 	| PTA_FXSR | PTA_XSAVE | PTA_XSAVEOPT},
 
-      {"knc", PROCESSOR_PENTIUM, CPU_GENERIC,
-       PTA_64BIT | PTA_NO_SAHF | PTA_KNC},
-
       {"generic", PROCESSOR_GENERIC, CPU_GENERIC,
 	PTA_64BIT
 	| PTA_HLE /* flags are only used for -march switch.  */ },
@@ -3448,8 +3366,6 @@ ix86_option_override_internal (bool main_args_p,
     };
 
   int const pta_size = ARRAY_SIZE (processor_alias_table);
-
-  long long  mic_isa_bit;
 
   /* Set up prefix/suffix so the error messages refer to either the command
      line argument, or the attribute(target).  */
@@ -3861,10 +3777,6 @@ ix86_option_override_internal (bool main_args_p,
 	if (processor_alias_table[i].flags & (PTA_PREFETCH_SSE | PTA_SSE))
 	  x86_prefetch_sse = true;
 
-	if (processor_alias_table[i].flags & PTA_KNC
-	    && !(ix86_isa_flags_explicit & OPTION_MASK_ISA_KNC))
-	  ix86_isa_flags |= OPTION_MASK_ISA_KNC;
-
 	break;
       }
 
@@ -4221,47 +4133,6 @@ ix86_option_override_internal (bool main_args_p,
       opts->x_target_flags |= MASK_ACCUMULATE_OUTGOING_ARGS;
     }
 
-   if (TARGET_KNC)
-    {
-      /* Always use KNC instruction costs.  */
-      ix86_cost = &knc_cost;
-      mic_isa_bit = OPTION_MASK_ISA_KNC;
-    }
-  else
-    mic_isa_bit = 0;
-
-  if (mic_isa_bit)
-    {
-      /* Disable CMOVE.  */
-      TARGET_CMOV = 0;
-
-      /* Don't allow move from and to vector unit.  */
-      TARGET_INTER_UNIT_MOVES_FROM_VEC = 0;
-      TARGET_INTER_UNIT_MOVES_TO_VEC = 0;
-
-      if (TARGET_64BIT)
-	{
-	  /* Enable extended REX SSE registers.  */
-	  /* TARGET_EXT_REX_SSE_REGS = 1; */
-
-	  /* Enable mask registers.  */
-	  /* TARGET_MASK_REGS = 1; */
-	}
-      else
-	{
-	  /* Turn off KNC ISA in 32bit.  */
-	  ix86_isa_flags &= ~mic_isa_bit;
-	}
-    }
-  else
-    {
-      /* For sane SSE instruction set generation we need fcomi instruction.
-         It is safe to enable all CMOVE instructions.  Also, RDRAND intrinsic
-         expands to a sequence that includes conditional move. */
-      if (TARGET_SSE || TARGET_RDRND)
-        TARGET_CMOV = 1;
-    }
-
   /* Figure out what ASM_GENERATE_INTERNAL_LABEL builds as a prefix.  */
   {
     char *p;
@@ -4554,7 +4425,7 @@ ix86_conditional_register_usage (void)
 	fixed_regs[i] = call_used_regs[i] = 1, reg_names[i] = "";
 
   /* If SSE is disabled, squash the registers.  */
-  if (! (TARGET_SSE || TARGET_KNC))
+  if (! TARGET_SSE)
     for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
       if (TEST_HARD_REG_BIT (reg_class_contents[(int)SSE_REGS], i))
 	fixed_regs[i] = call_used_regs[i] = 1, reg_names[i] = "";
@@ -4566,15 +4437,13 @@ ix86_conditional_register_usage (void)
 	fixed_regs[i] = call_used_regs[i] = 1, reg_names[i] = "";
 
   /* If AVX512F is disabled, squash the registers.  */
-  if (! (TARGET_AVX512F || TARGET_KNC))
+  if (! TARGET_AVX512F)
     {
       for (i = FIRST_EXT_REX_SSE_REG; i <= LAST_EXT_REX_SSE_REG; i++)
 	fixed_regs[i] = call_used_regs[i] = 1, reg_names[i] = "";
 
       for (i = FIRST_MASK_REG; i <= LAST_MASK_REG; i++)
 	fixed_regs[i] = call_used_regs[i] = 1, reg_names[i] = "";
-
-      fixed_regs[MASK2_REG] = 1;
     }
 
   /* If MPX is disabled, squash the registers.  */
@@ -4873,7 +4742,6 @@ ix86_valid_target_attribute_inner_p (tree args, char *p_strings[],
     IX86_ATTR_ISA ("avx512ifma",	OPT_mavx512ifma),
     IX86_ATTR_ISA ("clwb",	OPT_mclwb),
     IX86_ATTR_ISA ("pcommit",	OPT_mpcommit),
-    IX86_ATTR_ISA ("knc",       OPT_mknc),
 
     /* enum options */
     IX86_ATTR_ENUM ("fpmath=",	OPT_mfpmath_),
@@ -6268,7 +6136,7 @@ ix86_function_arg_regno_p (int regno)
 		    && (regno < FIRST_SSE_REG + SSE_REGPARM_MAX)));
     }
 
-  if ((TARGET_SSE || TARGET_KNC) && SSE_REGNO_P (regno)
+  if (TARGET_SSE && SSE_REGNO_P (regno)
       && (regno < FIRST_SSE_REG + SSE_REGPARM_MAX))
     return true;
 
@@ -6578,7 +6446,7 @@ init_cumulative_args (CUMULATIVE_ARGS *cum,  /* Argument info to initialize */
                    ? X86_64_REGPARM_MAX
                    : X86_64_MS_REGPARM_MAX);
     }
-  if (TARGET_SSE || TARGET_KNC)
+  if (TARGET_SSE)
     {
       cum->sse_nregs = SSE_REGPARM_MAX;
       if (TARGET_64BIT)
@@ -7342,7 +7210,7 @@ construct_container (machine_mode mode, machine_mode orig_mode,
 
   /* We allowed the user to turn off SSE for kernel mode.  Don't crash if
      some less clueful developer tries to use floating-point anyway.  */
-  if (needed_sseregs && !(TARGET_SSE || TARGET_KNC))
+  if (needed_sseregs && !TARGET_SSE)
     {
       if (in_return)
 	{
@@ -8091,8 +7959,7 @@ static bool
 ix86_compat_aligned_value_p (const_tree type)
 {
   machine_mode mode = TYPE_MODE (type);
-  if ((((TARGET_SSE || TARGET_KNC)
-	&& SSE_REG_MODE_P (mode))
+  if (((TARGET_SSE && SSE_REG_MODE_P (mode))
        || mode == TDmode
        || mode == TFmode
        || mode == TCmode)
@@ -8308,7 +8175,7 @@ ix86_function_value_regno_p (const unsigned int regno)
       /* Complex values are returned in %xmm0/%xmm1 pair.  */
     case XMM0_REG:
     case XMM1_REG:
-      return TARGET_SSE || TARGET_KNC;
+      return TARGET_SSE;
 
     case MM0_REG:
       if (TARGET_MACHO || TARGET_64BIT)
@@ -8782,7 +8649,7 @@ setup_incoming_varargs_64 (CUMULATIVE_ARGS *cum)
 
   /* FPR size of varargs save area.  We don't need it if we don't pass
      anything in SSE registers.  */
-  if ((TARGET_SSE || TARGET_KNC) && cfun->va_list_fpr_size)
+  if (TARGET_SSE && cfun->va_list_fpr_size)
     ix86_varargs_fpr_size = X86_64_SSE_REGPARM_MAX * 16;
   else
     ix86_varargs_fpr_size = 0;
@@ -9088,7 +8955,7 @@ ix86_va_start (tree valist, rtx nextarg)
       expand_expr (t, const0_rtx, VOIDmode, EXPAND_NORMAL);
     }
 
-  if ((TARGET_SSE || TARGET_KNC) && cfun->va_list_fpr_size)
+  if (TARGET_SSE && cfun->va_list_fpr_size)
     {
       type = TREE_TYPE (fpr);
       t = build2 (MODIFY_EXPR, type, fpr,
@@ -9626,9 +9493,6 @@ standard_sse_constant_opcode (rtx_insn *insn, rtx x)
   switch (standard_sse_constant_p (x))
     {
     case 1:
-      if (TARGET_KNC)
-	return "vpxorq\t%g0, %g0, %g0";
-
       switch (get_attr_mode (insn))
 	{
 	case MODE_XI:
@@ -10032,8 +9896,7 @@ ix86_select_alt_pic_regnum (void)
 /* Return TRUE if we need to save REGNO.  */
 
 static bool
-ix86_save_reg_1 (unsigned int regno, bool maybe_eh_return,
-		 bool maybe_live)
+ix86_save_reg (unsigned int regno, bool maybe_eh_return)
 {
   if (regno == REAL_PIC_OFFSET_TABLE_REGNUM
       && pic_offset_table_rtx)
@@ -10045,8 +9908,7 @@ ix86_save_reg_1 (unsigned int regno, bool maybe_eh_return,
 	  if (!TARGET_64BIT && flag_pic && crtl->profile)
 	    return true;
 	}
-      else if (maybe_live
-	       || df_regs_ever_live_p (REAL_PIC_OFFSET_TABLE_REGNUM)
+      else if (df_regs_ever_live_p (REAL_PIC_OFFSET_TABLE_REGNUM)
 	       || crtl->profile
 	       || crtl->calls_eh_return
 	       || crtl->uses_const_pool
@@ -10072,18 +9934,10 @@ ix86_save_reg_1 (unsigned int regno, bool maybe_eh_return,
       && !cfun->machine->no_drap_save_restore)
     return true;
 
-  return ((maybe_live || df_regs_ever_live_p (regno))
+  return (df_regs_ever_live_p (regno)
 	  && !call_used_regs[regno]
 	  && !fixed_regs[regno]
 	  && (regno != HARD_FRAME_POINTER_REGNUM || !frame_pointer_needed));
-}
-
-/* Return 1 if we need to save REGNO.  */
-
-static int
-ix86_save_reg (unsigned int regno, bool maybe_eh_return)
-{
-  return ix86_save_reg_1 (regno, maybe_eh_return, false);
 }
 
 /* Return number of saved general prupose registers.  */
@@ -15505,7 +15359,6 @@ print_reg (rtx x, int code, FILE *file)
    & -- print some in-use local-dynamic symbol name.
    H -- print a memory address offset by 8; used for sse high-parts
    Y -- print condition for XOP pcom* instruction.
-   M -- don't print memory operand size.
    + -- print a branch hint as 'cs' or 'ds' prefix
    ; -- print a semicolon (after prefixes due to bug in older gas).
    ~ -- print "i" if TARGET_AVX2, "f" otherwise.
@@ -16045,10 +15898,6 @@ ix86_print_operand (FILE *file, rtx x, int code)
 	    fputs ("gs", file);
 	  return;
 
-	case 'M':
-	  /* Skip memory operand size.  */
-	  break;
-
 	case '~':
 	  putc (TARGET_AVX2 ? 'i' : 'f', file);
 	  return;
@@ -16075,7 +15924,7 @@ ix86_print_operand (FILE *file, rtx x, int code)
     {
       /* No `byte ptr' prefix for call instructions or BLKmode operands.  */
       if (ASSEMBLER_DIALECT == ASM_INTEL && code != 'X' && code != 'P'
-	  && code != 'M' && GET_MODE (x) != BLKmode)
+	  && GET_MODE (x) != BLKmode)
 	{
 	  const char * size;
 	  switch (GET_MODE_SIZE (GET_MODE (x)))
@@ -17462,119 +17311,6 @@ maybe_get_pool_constant (rtx x)
   return NULL_RTX;
 }
 
-/* Load CONST_INT into MASK register.  */
-
-void
-ix86_split_load_mask_reg (rtx insn, rtx mask, rtx const_int)
-{
-  enum machine_mode mode = GET_MODE (mask);
-  rtx scratch = NULL_RTX;
-  unsigned int regno;
-  basic_block bb = BLOCK_FOR_INSN (insn);
-
-  /* Try to find a scratch register.  */
-  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
-    if (GENERAL_REGNO_P (regno)
-	&& !REGNO_REG_SET_P (DF_LR_IN (bb), regno)
-	&& !ix86_save_reg_1 (regno, true, true))
-      {
-	rtx_insn *next;
-
-	/* REGNO is dead when entering this basic block.  */
-	for (next = BB_HEAD (bb); next != insn; next = NEXT_INSN (next))
-	  if (NONDEBUG_INSN_P (next))
-	    {
-	      df_ref *def;
-	      for (def = &DF_INSN_DEFS (next); *def; def++)
-		if (DF_REF_TYPE (*def) == DF_REF_REG_DEF
-		    && !(DF_REF_FLAGS (*def)
-			 & (DF_REF_MUST_CLOBBER | DF_REF_MAY_CLOBBER))
-		    && !DF_REF_IS_ARTIFICIAL (*def)
-		    && regno == DF_REF_REGNO (*def))
-		  break;
-	    }
-
-	/* Use REGNO as scratch register if it isn't set before
-	   INSN.  */
-	if (next == insn)
-	  {
-	    scratch = gen_rtx_REG (mode, regno);
-	    break;
-	  }
-      }
-
-  if (scratch)
-    {
-      emit_move_insn (scratch, const_int);
-      emit_move_insn (mask, scratch);
-    }
-  else
-    {
-      /* Use AX_REG for scratch register if we can't find one.  */
-      rtx save = gen_rtx_REG (word_mode, AX_REG);
-      scratch = gen_rtx_REG (mode, AX_REG);
-      emit_insn (gen_push (save));
-      emit_move_insn (scratch, const_int);
-      emit_move_insn (mask, scratch);
-      emit_insn (gen_pop (save));
-    }
-}
-
-/* KNC scalar store expander for vector register.  For 32/64 bit, we
-   can simply store first element (mask 1).  For 128 bit, we can store
-   first 2 elements (mask 3) since 128 bit mememory is 128 bit aligned.
-
-   If SCRATCH register is NULL, allocate a hard register for scratch
-   register.  */
-
-void
-ix86_expand_knc_store (rtx dst, rtx src, rtx mask, rtx scratch)
-{
-  enum machine_mode mode = GET_MODE (dst);
-  rtx store_mask;
-  rtx (*knc_mask_store) (rtx, rtx, rtx);
-
-  if (mode == TImode || mode == TFmode)
-    store_mask = GEN_INT (0x3);
-  else
-    store_mask = CONST1_RTX (HImode);
-
-  if (scratch)
-    {
-      emit_move_insn (scratch, store_mask);
-      emit_move_insn (mask, scratch);
-    }
-  else
-    emit_insn (gen_knc_load_mask_reg_hi (mask, store_mask));
-
-  switch (mode)
-    {
-    case SImode:
-      knc_mask_store = gen_knc_storesi;
-      break;
-    case DImode:
-      knc_mask_store = gen_knc_storedi;
-      break;
-    case TImode:
-      knc_mask_store = gen_knc_storeti;
-      break;
-    case SFmode:
-      knc_mask_store = gen_knc_storesf;
-      break;
-    case DFmode:
-      knc_mask_store = gen_knc_storedf;
-      break;
-    case TFmode:
-      knc_mask_store = gen_knc_storetf;
-      break;
-    default:
-      gcc_unreachable ();
-      break;
-    }
-
-  emit_insn (knc_mask_store (dst, src, mask));
-}
-
 void
 ix86_expand_move (machine_mode mode, rtx operands[])
 {
@@ -17583,64 +17319,6 @@ ix86_expand_move (machine_mode mode, rtx operands[])
 
   op0 = operands[0];
   op1 = operands[1];
-
-  if (mode == DImode
-      && TARGET_KNC
-      && (REG_P (op0)
-	  || (GET_CODE (op0) == SUBREG && REG_P (SUBREG_REG (op0))))
-      && MEM_P (op1)
-      && MEM_ALIGN (op1) < GET_MODE_ALIGNMENT (DImode)
-      && MEM_ALIGN (op1) == GET_MODE_ALIGNMENT (SImode)
-      && can_create_pseudo_p ())
-    {
-      /* A SCmode variable with 4 byte alignment may be loaded into
-	 vector register in DImode, which requires 8 byte alignment.
-	 We generate a MIC misaligned load with 1 scratch integer
-	 register and 1 scratch mask register to handle misaligned
-	 DImode load/store for vector register.  We will split it
-	 after reload is completed.  */
-      //emit_insn (gen_knc_load_misalign_di (op0, op1));
-      //return;
-    }
-
-  if (TARGET_KNC
-      && (mode == SFmode || mode == DFmode)
-      && ((REG_P (op0)
-	   && MEM_P (op1)
-	   && MEM_ALIGN (op1) < GET_MODE_ALIGNMENT (mode))
-	  || (REG_P (op1)
-	      && MEM_P (op0)
-	      && MEM_ALIGN (op0) < GET_MODE_ALIGNMENT (mode)))
-      && can_create_pseudo_p ())
-    {
-      if (mode == SFmode)
-	emit_insn (gen_movmisalignsf (op0, op1));
-      else
-	emit_insn (gen_movmisaligndf (op0, op1));
-      return;
-    }
-
-  if (TARGET_KNC
-      && (mode == SImode
-	  || mode == DImode
-	  || mode == TImode
-	  || mode == SFmode
-	  || mode == DFmode
-	  || mode == TFmode)
-      && (SSE_REG_P (op1)
-	  || (GET_CODE (op1) == SUBREG && SSE_REG_P (SUBREG_REG (op1))))
-      && MEM_P (op0))
-    {
-      if (can_create_pseudo_p ())
-	ix86_expand_knc_store (op0, op1,
-			       gen_rtx_REG (HImode, MASK1_REG),
-			       gen_reg_rtx (HImode));
-      else
-	ix86_expand_knc_store (op0, op1,
-			       gen_rtx_REG (HImode, MASK2_REG),
-			       NULL_RTX);
-      return;
-    }
 
   if (GET_CODE (op1) == SYMBOL_REF)
     {
@@ -17742,7 +17420,7 @@ ix86_expand_move (machine_mode mode, rtx operands[])
 	  && (PUSH_ROUNDING (GET_MODE_SIZE (mode)) != GET_MODE_SIZE (mode)
 	      || !push_operand (op0, mode))
 	  && MEM_P (op1))
-	  op1 = force_reg (mode, op1);
+	op1 = force_reg (mode, op1);
 
       if (push_operand (op0, mode)
 	  && ! general_no_elim_operand (op1, mode))
@@ -17775,84 +17453,9 @@ ix86_expand_move (machine_mode mode, rtx operands[])
 	      return;
 	    }
 	}
-
-      if (TARGET_KNC
-	  && (mode == SFmode || mode == DFmode)
-	  && ((REG_P (op0)
-	       && MEM_P (op1)
-	       && MEM_ALIGN (op1) < GET_MODE_ALIGNMENT (mode))
-	      || (REG_P (op1)
-		  && MEM_P (op0)
-		  && MEM_ALIGN (op0) < GET_MODE_ALIGNMENT (mode)))
-	  && can_create_pseudo_p ())
-	{
-	  if (mode == SFmode)
-	    emit_insn (gen_movmisalignsf (op0, op1));
-	  else
-	    emit_insn (gen_movmisaligndf (op0, op1));
-	  return;
-	}
     }
 
   emit_insn (gen_rtx_SET (VOIDmode, op0, op1));
-}
-
-void
-ix86_expand_move_misalign (enum machine_mode mode, rtx operands[])
-{
-  rtx temp, mem;
-  enum machine_mode mem_mode;
-
-  /* Generate GPR load/store directly.  */
-  if (GENERAL_REG_P (operands[0]) || GENERAL_REG_P (operands[1]))
-    {
-      emit_move_insn (operands[0], operands[1]);
-      return;
-    }
-
-  /* Move the first 4/8 bytes.  */
-  mem_mode = GET_MODE (operands[3]);
-  temp = adjust_address (operands[2], mem_mode, 0);
-  if (MEM_P (operands[0]))
-    {
-      if (TARGET_KNC)
-	ix86_expand_knc_store (operands[2], operands[1],
-			       gen_rtx_REG (HImode, MASK2_REG),
-			       gen_rtx_REG (HImode,
-					    REGNO (operands[3])));
-      else
-	emit_move_insn (operands[2], operands[1]);
-      mem = adjust_address (operands[0], mem_mode, 0);
-      emit_move_insn (operands[3], temp);
-      emit_move_insn (mem, operands[3]);
-    }
-  else
-    {
-      mem = adjust_address (operands[1], mem_mode, 0);
-      emit_move_insn (operands[3], mem);
-      emit_move_insn (temp, operands[3]);
-    }
-
-  if (mode == TFmode)
-    {
-      /* Move the next 8 bytes.  */
-      temp = adjust_address (operands[2], mem_mode, 8);
-      if (MEM_P (operands[0]))
-	{
-	  mem = adjust_address (operands[0], mem_mode, 8);
-	  emit_move_insn (operands[3], temp);
-	  emit_move_insn (mem, operands[3]);
-	}
-      else
-	{
-	  mem = adjust_address (operands[1], mem_mode, 8);
-	  emit_move_insn (operands[3], mem);
-	  emit_move_insn (temp, operands[3]);
-	}
-    }
-
-  if (!MEM_P (operands[0]))
-    emit_move_insn (operands[0], operands[2]);
 }
 
 void
@@ -20544,7 +20147,7 @@ ix86_prepare_fp_compare_args (enum rtx_code code, rtx *pop0, rtx *pop1)
   machine_mode fpcmp_mode = ix86_fp_compare_mode (code);
   rtx op0 = *pop0, op1 = *pop1;
   machine_mode op_mode = GET_MODE (op0);
-  int is_sse = (!TARGET_KNC) && (TARGET_SSE_MATH && SSE_FLOAT_MODE_P (op_mode));
+  int is_sse = TARGET_SSE_MATH && SSE_FLOAT_MODE_P (op_mode);
 
   /* All of the unordered compare instructions only work on registers.
      The same is true of the fcomi compare instructions.  The XFmode
@@ -22019,9 +21622,6 @@ ix86_expand_fp_movcc (rtx operands[])
   rtx tmp, compare_op;
   rtx op0 = XEXP (operands[1], 0);
   rtx op1 = XEXP (operands[1], 1);
-
-  if (TARGET_KNC)
-    return false;
 
   if (TARGET_SSE_MATH && SSE_FLOAT_MODE_P (mode))
     {
@@ -34095,12 +33695,10 @@ ix86_init_mmx_sse_builtins (void)
       def_builtin_const (d->mask, d->name, ftype, d->code);
     }
 
-  /* SSE or KNC */
-  def_builtin ((OPTION_MASK_ISA_SSE
-		| OPTION_MASK_ISA_KNC), "__builtin_ia32_ldmxcsr",
+  /* SSE */
+  def_builtin (OPTION_MASK_ISA_SSE, "__builtin_ia32_ldmxcsr",
 	       VOID_FTYPE_UNSIGNED, IX86_BUILTIN_LDMXCSR);
-  def_builtin ((OPTION_MASK_ISA_SSE
-		| OPTION_MASK_ISA_KNC), "__builtin_ia32_stmxcsr",
+  def_builtin (OPTION_MASK_ISA_SSE, "__builtin_ia32_stmxcsr",
 	       UNSIGNED_FTYPE_VOID, IX86_BUILTIN_STMXCSR);
 
   /* SSE or 3DNow!A */
@@ -41791,7 +41389,7 @@ ix86_preferred_output_reload_class (rtx x, reg_class_t regclass)
   if (TARGET_SSE_MATH && SSE_FLOAT_MODE_P (mode))
     return MAYBE_SSE_CLASS_P (regclass) ? ALL_SSE_REGS : NO_REGS;
 
-  if ((!TARGET_KNC) && X87_FLOAT_MODE_P (mode))
+  if (X87_FLOAT_MODE_P (mode))
     {
       if (regclass == FP_TOP_SSE_REGS)
 	return FP_TOP_REG;
@@ -41808,71 +41406,13 @@ static reg_class_t
 ix86_secondary_reload (bool in_p, rtx x, reg_class_t rclass,
 		       machine_mode mode, secondary_reload_info *sri)
 {
-  if (TARGET_KNC
-      && in_p
-      && REG_P (x)
-      && SSE_CLASS_P (rclass)
-      && mode == TImode)
-    {
-      sri->icode = CODE_FOR_knc_reload_inti;
-      return NO_REGS;
-    }
-
-  if (TARGET_KNC
-      && !in_p
-      && MEM_P (x)
-      && SSE_CLASS_P (rclass)
-      && (mode == SImode
-	  || mode == DImode
-	  || mode == TImode
-	  || mode == SFmode
-	  || mode == DFmode
-	  || mode == TFmode))
-    {
-      /* Prohibit for secondary reloads.  */
-      if (misaligned_operand (x, mode)
-	  && (mode != SFmode)
-	  && (mode != DFmode)
-	  && (mode != TFmode)
-	  && (mode != DImode))
-	return NO_REGS;
-
-      switch (mode)
-	{
-	case SImode:
-	  sri->icode = CODE_FOR_knc_reload_outsi;
-	  break;
-	case DImode:
-	  sri->icode = CODE_FOR_knc_reload_outdi;
-	  break;
-	case TImode:
-	  sri->icode = CODE_FOR_knc_reload_outti;
-	  break;
-	case SFmode:
-	  sri->icode = CODE_FOR_knc_reload_outsf;
-	  break;
-	case DFmode:
-	  sri->icode = CODE_FOR_knc_reload_outdf;
-	  break;
-	case TFmode:
-	  sri->icode = CODE_FOR_knc_reload_outtf;
-	  break;
-	default:
-	  gcc_unreachable ();
-	  break;
-	}
-
-      return NO_REGS;
-    }
-
   /* Double-word spills from general registers to non-offsettable memory
      references (zero-extended addresses) require special handling.  */
   if (TARGET_64BIT
       && MEM_P (x)
       && GET_MODE_SIZE (mode) > UNITS_PER_WORD
       && INTEGER_CLASS_P (rclass)
-      && !offsettable_nonstrict_memref_p (x)
-      && !push_operand (x, mode))
+      && !offsettable_memref_p (x))
     {
       sri->icode = (in_p
 		    ? CODE_FOR_reload_noff_load
@@ -41992,21 +41532,6 @@ static inline bool
 inline_secondary_memory_needed (enum reg_class class1, enum reg_class class2,
 				machine_mode mode, int strict)
 {
-  if (lra_in_progress && (class1 == NO_REGS || class2 == NO_REGS))
-    return false;
-
-  if (TARGET_KNC
-      && strict
-      && ((SSE_CLASS_P (class1)
-	   && !SSE_CLASS_P (class2))
-	  || (SSE_CLASS_P (class2)
-	      && !SSE_CLASS_P (class1)))
-      && mode == TImode)
-    {
-      gcc_assert (lra_in_progress);
-      /*return true;*/
-    }
-
   if (lra_in_progress && (class1 == NO_REGS || class2 == NO_REGS))
     return false;
   if (MAYBE_FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class1)

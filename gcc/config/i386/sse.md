@@ -13135,7 +13135,7 @@
 (define_insn "sse_ldmxcsr"
   [(unspec_volatile [(match_operand:SI 0 "memory_operand" "m")]
 		    UNSPECV_LDMXCSR)]
-  "TARGET_SSE || TARGET_KNC"
+  "TARGET_SSE"
   "%vldmxcsr\t%0"
   [(set_attr "type" "sse")
    (set_attr "atom_sse_attr" "mxcsr")
@@ -13145,7 +13145,7 @@
 (define_insn "sse_stmxcsr"
   [(set (match_operand:SI 0 "memory_operand" "=m")
 	(unspec_volatile:SI [(const_int 0)] UNSPECV_STMXCSR))]
-  "TARGET_SSE || TARGET_KNC"
+  "TARGET_SSE"
   "%vstmxcsr\t%0"
   [(set_attr "type" "sse")
    (set_attr "atom_sse_attr" "mxcsr")

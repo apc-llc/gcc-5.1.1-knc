@@ -13134,64 +13134,6 @@ _mm512_cmpgt_epu64_mask (__m512i __A, __m512i __B)
 						    (__mmask8) -1);
 }
 
-/* Constants for register swizzle primitives. */
-typedef enum {
-    _MM_SWIZ_REG_NONE,      /* hgfe dcba - Nop */
-#define _MM_SWIZ_REG_DCBA _MM_SWIZ_REG_NONE
-    _MM_SWIZ_REG_CDAB,      /* ghef cdab - Swap pairs */
-    _MM_SWIZ_REG_BADC,      /* fehg badc - Swap with two-away */
-    _MM_SWIZ_REG_AAAA,      /* eeee aaaa - broadcast a element */
-    _MM_SWIZ_REG_BBBB,      /* ffff bbbb - broadcast b element */
-    _MM_SWIZ_REG_CCCC,      /* gggg cccc - broadcast c element */
-    _MM_SWIZ_REG_DDDD,      /* hhhh dddd - broadcast d element */
-    _MM_SWIZ_REG_DACB       /* hegf dacb - cross-product */
-} _MM_SWIZZLE_ENUM;
-
-inline __m512d _mm512_swizzle_pd(__m512d val, _MM_SWIZZLE_ENUM imm)
-{
-	switch (imm)
-	{
-	case _MM_SWIZ_REG_DCBA : break;
-	case _MM_SWIZ_REG_CDAB : __asm__ ("vmovapd %0%{cdab%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_BADC : __asm__ ("vmovapd %0%{badc%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_AAAA : __asm__ ("vmovapd %0%{aaaa%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_BBBB : __asm__ ("vmovapd %0%{bbbb%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_CCCC : __asm__ ("vmovapd %0%{cccc%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_DDDD : __asm__ ("vmovapd %0%{dddd%}, %0" : "+x"(val)); break;
-	case _MM_SWIZ_REG_DACB : __asm__ ("vmovapd %0%{dacb%}, %0" : "+x"(val)); break;
-	}
-
-	return val;
-}
-
-inline __m512d _mm512_reverse_pd(__m512d val)
-{
-	static int reverse_mask_set = 0;
-	static __m512i reverse_mask;
-	if (!reverse_mask_set)
-	{
-		reverse_mask = _mm512_set_epi32(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
-		reverse_mask_set = 1;
-	}
-
-	return (__m512d)_mm512_permutexvar_epi32(reverse_mask, (__m512i)val);
-}
-
-inline double _mm512_reduce_mul_pd(__m512d val)
-{
-	__m512d hgfe_dcba = val;
-	__m512d ghef_cdab = _mm512_swizzle_pd(val, _MM_SWIZ_REG_CDAB);
-	__m512d fehg_badc = _mm512_swizzle_pd(val, _MM_SWIZ_REG_BADC);
-	__m512d efgh_abcd = _mm512_swizzle_pd(_mm512_swizzle_pd(val, _MM_SWIZ_REG_BADC), _MM_SWIZ_REG_CDAB);
-
-	hgfe_dcba = _mm512_mul_pd(_mm512_mul_pd(hgfe_dcba, ghef_cdab), _mm512_mul_pd(fehg_badc, efgh_abcd));
-	__m512d abcd_efgh = _mm512_reverse_pd(hgfe_dcba);
-	
-	double values[8] __attribute__((aligned(64)));
-	_mm512_store_pd(values, _mm512_mul_pd(hgfe_dcba, abcd_efgh));
-	return values[0];
-}
-
 #ifdef __DISABLE_AVX512F__
 #undef __DISABLE_AVX512F__
 #pragma GCC pop_options

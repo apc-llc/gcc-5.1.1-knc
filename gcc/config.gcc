@@ -369,7 +369,7 @@ i[34567]86-*-*)
 		       avx512ifmaintrin.h avx512ifmavlintrin.h avx512vbmiintrin.h
 		       avx512vbmivlintrin.h clwbintrin.h pcommitintrin.h"
 	;;
-x86_64-*-* | k1om-*-*)
+x86_64-*-*)
 	cpu_type=i386
 	c_target_objs="i386-c.o"
 	cxx_target_objs="i386-c.o"
@@ -389,6 +389,13 @@ x86_64-*-* | k1om-*-*)
 		       avx512vlintrin.h avx512vlbwintrin.h avx512vldqintrin.h
 		       avx512ifmaintrin.h avx512ifmavlintrin.h avx512vbmiintrin.h
 		       avx512vbmivlintrin.h clwbintrin.h pcommitintrin.h"
+	;;
+k1om-*-*)
+        cpu_type=k1om
+        c_target_objs="k1om-c.o"
+        cxx_target_objs="k1om-c.o"
+        extra_options="${extra_options}"
+        extra_headers="cpuid.h kncintrin.h"
 	;;
 ia64-*-*)
 	extra_headers=ia64intrin.h
@@ -1517,7 +1524,7 @@ x86_64-*-linux* | x86_64-*-kfreebsd*-gnu | x86_64-*-knetbsd*-gnu | k1om-*-linux*
 	esac
 	case ${target} in
 	x86_64-k1om-linux* | k1om-*-linux*)
-	  tm_file="${tm_file} i386/linuxk1om.h"
+	  tm_file="${tm_file} k1om/linuxk1om.h"
 	  ;;
 	esac;
 	tmake_file="${tmake_file} i386/t-linux64"
@@ -2969,11 +2976,17 @@ m32c-*-elf*)
 esac
 
 case ${target} in
-i[34567]86-*-linux* | x86_64-*-linux* | k1om-*-linux*)
+i[34567]86-*-linux* | x86_64-*-linux*)
 	tmake_file="${tmake_file} i386/t-pmm_malloc i386/t-i386"
 	;;
-i[34567]86-*-* | x86_64-*-* | k1om-*-*)
+k1om-*-linux*)
+	tmake_file="${tmake_file} k1om/t-pmm_malloc k1om/t-k1om"
+	;;
+i[34567]86-*-* | x86_64-*-*)
 	tmake_file="${tmake_file} i386/t-gmm_malloc i386/t-i386"
+	;;
+k1om-*-*)
+	tmake_file="${tmake_file} k1om/t-gmm_malloc k1om/t-k1om"
 	;;
 powerpc*-*-* | rs6000-*-*)
 	tm_file="${tm_file} rs6000/option-defaults.h"
@@ -3425,7 +3438,7 @@ fi
 # Support --with-fpmath.
 if test x$with_fpmath != x; then
   case ${target} in
-    i[34567]86-*-* | x86_64-*-* | k1om-*-*)
+    i[34567]86-*-* | x86_64-*-*)
       case ${with_fpmath} in
       avx)
 	tm_file="${tm_file} i386/avxmath.h"
@@ -3439,12 +3452,27 @@ if test x$with_fpmath != x; then
 	;;
       esac
       ;;
+    k1om-*-*)
+      case ${with_fpmath} in
+      avx)
+	tm_file="${tm_file} k1om/avxmath.h"
+	;;
+      sse)
+	tm_file="${tm_file} k1om/ssemath.h"
+	;;
+      *)
+	echo "Invalid --with-fpmath=$with_fpmath" 1>&2
+	exit 1
+	;;
+      esac
+      ;;
     *)
       echo "--with-fpmath isn't supported for $target." 1>&2
       exit 1
       ;;
   esac
 fi
+
 
 # Similarly for --with-schedule.
 if test x$with_schedule = x; then
